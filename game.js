@@ -26,7 +26,7 @@
   /* ───────── Réponses : normalisation et tolérance aux fautes ───────── */
   function norm(s) {
     return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
-      .replace(/œ/g, 'oe').replace(/æ/g, 'ae').replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').trim();
+      .replace(/œ/g, 'oe').replace(/æ/g, 'ae').replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').trim().replace(/\bet\b/g, 'and');
   }
   function lev(a, b) {
     if (a === b) return 0;
