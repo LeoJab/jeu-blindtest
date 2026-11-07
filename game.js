@@ -121,14 +121,15 @@
     const p = String(line).split('|').map(s => s.trim());
     const al = s => (s || '').split(';').map(x => x.trim()).filter(Boolean);
     if (g.dessins) return p[0] && p[1] && p[2] ? { k: 'd', r: p[0], q: p[1], w: p[2], al: al(p[3]) } : null;
+    if (g.oeuvres) return p[0] && p[1] && p[2] ? { k: 'f', r: p[0], t: p[1], a: p[2], al: al(p[3]) } : null;   // film/série : on devine l'œuvre, le morceau sert à la trouver
     return p[0] && p[1] ? { k: 's', t: p[0], a: p[1], al: al(p[2]) } : null;
   }
-  const GROUPS = (window.BT_CATALOGUE || []).map(g => ({ id: g.id, nom: g.nom, emoji: g.emoji, dessins: !!g.dessins, items: g.items.map(l => parseItem(g, l)).filter(Boolean) }));
+  const GROUPS = (window.BT_CATALOGUE || []).map(g => ({ id: g.id, nom: g.nom, emoji: g.emoji, dessins: !!g.dessins, oeuvres: !!g.oeuvres, items: g.items.map(l => parseItem(g, l)).filter(Boolean) }));
   const ALL_CATS = [{ id: 'mix', nom: 'Le grand mélange', emoji: '🎲' }].concat(GROUPS.map(g => ({ id: g.id, nom: g.nom, emoji: g.emoji })));
   function buildPool(cat) {
     const groups = cat === 'mix' ? GROUPS : GROUPS.filter(g => g.id === cat);
     const seen = new Set(), out = [];
-    groups.forEach(g => g.items.forEach(e => { const k = e.k === 'd' ? 'd' + e.r : e.t + '|' + e.a; if (!seen.has(k)) { seen.add(k); out.push(e); } }));
+    groups.forEach(g => g.items.forEach(e => { const k = e.k === 'd' ? 'd' + e.r : e.k === 'f' ? 'f' + e.r : e.t + '|' + e.a;  if (!seen.has(k)) { seen.add(k); out.push(e); } }));
     return shuffle(out);
   }
 
@@ -228,7 +229,9 @@
     const c = best.cover || '';
     const tr = e.k === 'd'
       ? { i: best.id, t: e.r, a: '', c, x: best.title + ' — ' + best.artist }
-      : { i: best.id, t: e.t, a: e.a, c };
+      : e.k === 'f'
+        ? { i: best.id, t: e.r, a: '', c, x: e.t + ' — ' + e.a }
+        : { i: best.id, t: e.t, a: e.a, c };
     if (prov === 'i') { tr.p = 'i'; tr.u = best.preview; }
     if (e.al && e.al.length) tr.al = e.al;
     return tr;
@@ -631,7 +634,7 @@
   }
   function buildChips() {
     const tr = S.tr[S.r], box = $('#found-chips'); if (!tr) return;
-    box.innerHTML = '<span class="fchip" data-k="t">' + (tr.a ? '🎯 Titre' : '📺 Série') + '</span>' + (tr.a ? '<span class="fchip" data-k="a">🎤 Artiste</span>' : '');
+    box.innerHTML = '<span class="fchip" data-k="t">' + (tr.a ? '🎯 Titre' : '📺 Film / série') + '</span>' + (tr.a ? '<span class="fchip" data-k="a">🎤 Artiste</span>' : '');
     updateStatusChips();
   }
   function updateStatusChips() {
