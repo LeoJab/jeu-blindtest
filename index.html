@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Blind Test</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Décor -->
+  <div id="bg"><div class="rays"></div><div id="notes"></div></div>
+  <canvas id="fx"></canvas>
+  <div id="vignette"></div>
+  <div id="flash"></div>
+
+  <div id="app">
+    <header id="bar">
+      <div class="brand">🎧 <b>BLIND TEST</b></div>
+      <div class="bar-right">
+        <button id="btn-mute" class="icon-btn" title="Couper / remettre le son" aria-label="Son">🔊</button>
+        <input id="vol" type="range" min="0" max="100" value="80" aria-label="Volume">
+        <button id="btn-rules" class="icon-btn pill">❓ Règles</button>
+      </div>
+    </header>
+
+    <main id="main">
+
+      <!-- ACCUEIL -->
+      <section id="s-home" class="screen active">
+        <div class="card hero">
+          <div class="logo-vinyl"><div class="grooves"></div><div class="label">♪</div></div>
+          <h1>BLIND TEST</h1>
+          <p class="tagline">Reconnais le morceau avant tes potes !</p>
+
+          <div id="who" class="who" hidden></div>
+          <div id="pseudo-row" class="field" hidden>
+            <label for="pseudo">Ton pseudo</label>
+            <input id="pseudo" maxlength="20" placeholder="Ton pseudo" autocomplete="off">
+          </div>
+
+          <button id="btn-create" class="btn big yellow">🎤 Créer une salle</button>
+          <div class="or"><span>ou rejoins une salle</span></div>
+          <div class="join-row">
+            <input id="code" maxlength="12" placeholder="CODE" autocomplete="off" autocapitalize="characters" spellcheck="false">
+            <button id="btn-join" class="btn">Rejoindre</button>
+          </div>
+          <p id="home-msg" class="msg"></p>
+        </div>
+      </section>
+
+      <!-- SALLE D'ATTENTE -->
+      <section id="s-lobby" class="screen">
+        <div class="card">
+          <div class="room-line">
+            <span>Code de la salle</span>
+            <button id="code-copy" class="code-pill" title="Copier le code"><b id="room-code">----</b> 📋</button>
+          </div>
+          <p class="small">Tes potes te rejoignent avec ce code, ou avec le bouton « Inviter » du hub.</p>
+          <h2>Joueurs <span id="pl-count" class="count"></span></h2>
+          <ul id="lobby-players" class="plist"></ul>
+        </div>
+
+        <div class="card">
+          <h2>Réglages</h2>
+          <div class="cfg-label">Playlist</div>
+          <div id="cfg-cats" class="chips"></div>
+          <div class="row"><span class="cfg-label">Manches</span><div id="cfg-n" class="seg"></div></div>
+          <div class="row"><span class="cfg-label">Durée d'une manche</span><div id="cfg-d" class="seg"></div></div>
+          <p id="lobby-err" class="msg err"></p>
+          <button id="btn-start" class="btn big yellow">▶ Lancer la partie</button>
+          <p id="lobby-wait" class="msg dark">En attente de l'hôte… 👑</p>
+          <button id="btn-leave" class="btn ghost dark">Quitter la salle</button>
+        </div>
+      </section>
+
+      <!-- JEU -->
+      <section id="s-game" class="screen" data-state="prep">
+        <div class="g-top">
+          <div class="round-pill"><span id="g-round">Manche 1/10</span> <span class="sep">•</span> <span id="g-cat"></span></div>
+          <div id="streak" class="streak" hidden>🔥 <b id="streak-n">×2</b></div>
+        </div>
+
+        <div class="g-body">
+          <div class="g-main">
+            <div class="stage" id="stage">
+              <svg class="ring" viewBox="0 0 200 200" aria-hidden="true">
+                <circle class="ring-bg" cx="100" cy="100" r="94"/>
+                <circle id="ring-fg" class="ring-fg" cx="100" cy="100" r="94"/>
+              </svg>
+              <div class="disc" id="disc">
+                <div class="disc-face vinyl"><div class="grooves"></div><div class="label"><span id="g-time">20</span></div></div>
+                <div class="disc-face cover"><img id="g-cover" alt=""></div>
+              </div>
+              <div id="big-msg" class="big-msg" aria-live="polite"></div>
+            </div>
+
+            <div class="eq" id="eq" aria-hidden="true"></div>
+
+            <div class="hints" id="hints">
+              <div class="hint-line" id="hint-t"></div>
+              <div class="hint-line sm" id="hint-a"></div>
+            </div>
+
+            <div id="reveal" class="reveal" hidden>
+              <div class="rv-title" id="rv-title"></div>
+              <div class="rv-artist" id="rv-artist"></div>
+              <div class="rv-x" id="rv-x"></div>
+              <ul id="rv-list" class="rv-list"></ul>
+              <div class="next-bar"><i id="next-fill"></i></div>
+            </div>
+
+            <form id="guess-form" autocomplete="off">
+              <input id="guess" type="text" placeholder="Titre ou artiste…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="send">
+              <button class="btn yellow" type="submit">OK</button>
+            </form>
+            <div id="found-chips" class="found-chips"></div>
+            <div id="feed" class="feed"></div>
+            <button id="btn-skip" class="btn small ghost" type="button" hidden>⏭ Passer la manche (hôte)</button>
+          </div>
+
+          <aside class="g-side"><ol id="board" class="board"></ol></aside>
+        </div>
+      </section>
+
+      <!-- FIN -->
+      <section id="s-end" class="screen">
+        <div class="end-wrap">
+          <h2 class="end-title">🏆 Fin de partie !</h2>
+          <div class="podium" id="podium"></div>
+          <ol id="final-list" class="board final"></ol>
+          <div class="end-actions">
+            <button id="btn-again" class="btn big yellow">🔁 Rejouer</button>
+            <p id="end-wait" class="msg">L'hôte peut relancer une partie 👑</p>
+            <button id="btn-leave2" class="btn ghost">Quitter la salle</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Chargement de la playlist -->
+  <div id="loading" class="overlay" hidden>
+    <div class="load-box">
+      <div class="logo-vinyl spin"><div class="grooves"></div><div class="label">♪</div></div>
+      <p id="loading-txt">Je prépare la playlist…</p>
+    </div>
+  </div>
+
+  <!-- Son bloqué par le navigateur -->
+  <div id="gate" class="overlay" hidden>
+    <button id="gate-btn" class="btn big yellow">🔊 Touche pour activer le son</button>
+  </div>
+
+  <!-- Règles -->
+  <div id="rules" class="overlay" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="rules-h">
+      <button class="modal-x" id="rules-x" aria-label="Fermer">✕</button>
+      <h2 id="rules-h">❓ Règles du Blind Test</h2>
+
+      <h3>🎯 But du jeu</h3>
+      <p>Un extrait de morceau est joué. Retrouve le <b>titre</b> et/ou l'<b>artiste</b> avant les autres. Celui qui a le plus de points à la fin gagne.</p>
+
+      <h3>🕹️ Comment jouer</h3>
+      <ul>
+        <li>Écoute l'extrait (activer le son !), tape ta réponse dans la case puis <b>Entrée</b>.</li>
+        <li>Tu peux répondre en plusieurs fois : le titre, puis l'artiste (ou les deux d'un coup).</li>
+        <li>Les majuscules, accents et petites fautes sont ignorés.</li>
+        <li>Des indices apparaissent au fil du temps (lettres du titre).</li>
+        <li>Catégorie <b>Dessins animés</b> : tape le nom de la série, il n'y a pas d'artiste.</li>
+      </ul>
+
+      <h3>⭐ Les points</h3>
+      <ul>
+        <li><b>Titre</b> : 100 pts + jusqu'à 100 pts de bonus de vitesse.</li>
+        <li><b>Artiste</b> : 50 pts + jusqu'à 50 pts de bonus de vitesse.</li>
+        <li><b>Premier</b> à trouver le titre : +50 pts. <b>Titre + artiste</b> : +25 pts.</li>
+        <li><b>Série</b> : chaque manche réussie de suite ajoute un bonus (jusqu'à +50).</li>
+      </ul>
+
+      <h3>🏁 Fin et victoire</h3>
+      <p>La manche s'arrête quand tout le monde a trouvé ou quand le temps est écoulé. Après la dernière manche, le meilleur score gagne (en cas d'égalité, les premiers gagnent tous).</p>
+
+      <h3>💡 Bon à savoir</h3>
+      <ul>
+        <li>L'hôte (👑) choisit la playlist et lance la partie. S'il part, un autre joueur prend le relais.</li>
+        <li>Ouvrir les règles ne met rien en pause : la partie continue.</li>
+        <li>Les extraits viennent de Deezer ; un morceau sans extrait est automatiquement remplacé.</li>
+      </ul>
+      <button class="btn big yellow" id="rules-ok">J'ai compris !</button>
+    </div>
+  </div>
+
+  <audio id="player" preload="auto" playsinline></audio>
+
+  <script src="/_sdk.js"></script>
+  <script src="catalogue.js"></script>
+  <script src="fx.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
